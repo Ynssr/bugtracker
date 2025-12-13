@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hata Takip Sistemi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+    <header class="navbar navbar-expand-md navbar-dark d-print-none">
+        <div class="container-xl">
+            <h1 class="navbar-brand">
+                <a href="#">
+                    <i class="ti ti-bug"></i>
+                    Bug Tracker System
+                </a>
+            </h1>
+            <div class="navbar-nav flex-row order-md-last">
+            <span class="nav-link text-white me-3" id="kullaniciAdi">
+                <i class="ti ti-user"></i>
+            </span>
+                <button class="btn btn-ghost-danger" onclick="cikisYap()">
+                    <i class="ti ti-logout"></i> Çıkış
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="page-wrapper">
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="row row-cards mb-3">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="subheader">Toplam Bug</div>
+                                </div>
+                                <div class="h1 mb-0" id="toplamBug">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="subheader">Açık</div>
+                                <div class="h1 mb-0 text-blue" id="acikBug">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="subheader">Devam Eden</div>
+                                <div class="h1 mb-0 text-yellow" id="devamEdenBug">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="subheader">Çözülmüş</div>
+                                <div class="h1 mb-0 text-green" id="cozulmusBug">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                            <li class="nav-item">
+                                <a href="#tabs-bugs" class="nav-link active" data-bs-toggle="tab">
+                                    <i class="ti ti-bug me-2"></i>Bug'lar
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#tabs-users" class="nav-link" data-bs-toggle="tab">
+                                    <i class="ti ti-users me-2"></i>Kullanıcılar
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#tabs-reports" class="nav-link" data-bs-toggle="tab">
+                                    <i class="ti ti-report me-2"></i>Raporlar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <!-- Bug'lar Tab -->
+                            <div class="tab-pane active show" id="tabs-bugs">
+                                <div class="d-flex mb-3">
+                                    <button class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-bug">
+                                        <i class="ti ti-plus"></i> Yeni Bug
+                                    </button>
+                                </div>
+                                <div id="bugListesi"></div>
+                            </div>
+                            <div class="tab-pane" id="tabs-users">
+                                <div class="d-flex mb-3">
+                                    <button class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#modal-user">
+                                        <i class="ti ti-user-plus"></i> Yeni Kullanıcı
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-vcenter">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Kullanıcı Adı</th>
+                                            <th>Email</th>
+                                            <th>Rol</th>
+                                            <th>Durum</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="kullaniciListesi"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tabs-reports">
+                                <div class="mb-3">
+                                    <label class="form-label">Rapor Formatı</label>
+                                    <select class="form-select" id="raporFormat">
+                                        <option value="Pdf">PDF</option>
+                                        <option value="Excel">Excel</option>
+                                        <option value="Csv">CSV</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-success" onclick="raporOlustur()">
+                                    <i class="ti ti-download"></i> Rapor Oluştur
+                                </button>
+                                <pre id="raporOnizleme" class="mt-3 p-3 bg-light" style="max-height: 400px; overflow-y: auto;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-blur fade" id="modal-bug" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Bug Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Başlık</label>
+                    <input type="text" class="form-control" id="bugBaslik">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Açıklama</label>
+                    <textarea class="form-control" id="bugAciklama" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Öncelik</label>
+                        <select class="form-select" id="bugOncelik">
+                            <option value="Low">Düşük</option>
+                            <option value="Medium">Orta</option>
+                            <option value="High">Yüksek</option>
+                            <option value="Critical">Kritik</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Önem</label>
+                        <select class="form-select" id="bugOnem">
+                            <option value="Minor">Küçük</option>
+                            <option value="Major">Büyük</option>
+                            <option value="Critical">Kritik</option>
+                            <option value="Blocker">Çok Kritik</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="bugKaydet()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-blur fade" id="modal-user" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Kullanıcı Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="userUsername">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="userEmail">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" class="form-control" id="userPassword">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ad Soyad</label>
+                    <input type="text" class="form-control" id="userFullName">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Rol</label>
+                    <select class="form-select" id="userRole">
+                        <option value="Admin">Yönetici</option>
+                        <option value="Developer">Geliştirici</option>
+                        <option value="Tester">Test Uzmanı</option>
+                        <option value="Reporter">Raporlayıcı</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" onclick="kullaniciKaydet()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const user = localStorage.getItem('currentUser');
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const userData = JSON.parse(user);
+            const kullaniciSpan = document.getElementById('kullaniciAdi');
+
+            if (kullaniciSpan) {
+                let yazilacakIsim = "Misafir";
+
+                if (userData.username && userData.username.trim() !== "") {
+                    yazilacakIsim = userData.username;
+                }
+                else if (userData.fullName && userData.fullName.trim() !== "") {
+                    yazilacakIsim = userData.fullName;
+                }
+                kullaniciSpan.innerHTML = `<i class="ti ti-user"></i> ${yazilacakIsim}`;
+                console.log("Ekrana yazılan isim:", yazilacakIsim); // Konsoldan kontrol edebilirsin
+            }
+        } catch (e) {
+            console.error("Hata:", e);
+        }
+        if (typeof verileriYukle === "function") {
+            verileriYukle();
+        }
+    });
+
+    function cikisYap() {
+        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    }
+</script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - Bug Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column">
+<div class="page page-center">
+    <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+            <h1 class="navbar-brand navbar-brand-autodark">
+                🐛 Bug Tracker System
+            </h1>
+        </div>
+        <div class="card card-md">
+            <div class="card-body">
+                <h2 class="h2 text-center mb-4">Sisteme Giriş Yap</h2>
+                <form id="loginForm" onsubmit="girisYap(event)">
+                    <div class="mb-3">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="username" placeholder="Kullanıcı adınızı girin" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Şifre</label>
+                        <input type="password" class="form-control" id="password" placeholder="Şifrenizi girin" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input"/>
+                            <span class="form-check-label">Beni hatırla</span>
+                        </label>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="text-center text-muted mt-3">
+            Hesabınız yok mu?
+            <a href="#" onclick="alert('Yönetici ile iletişime geçin')">Yardım alın</a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    const API_URL = 'http://localhost:8080/api';
+
+    async function girisYap(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch(`${API_URL}/users/username/${username}`);
+
+            if (!response.ok) {
+                alert('Kullanıcı adı veya şifre hatalı!');
+                return;
+            }
+
+            const user = await response.json();
+
+            // Şifre kontrolü (basit versiyon - gerçek projede hash olmalı)
+            if (user.password !== password) {
+                alert('Kullanıcı adı veya şifre hatalı!');
+                return;
+            }
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            alert('Giriş başarılı! Hoş geldiniz ' + user.fullName);
+            window.location.href = 'index.html';
+
+        } catch (error) {
+            console.error('Giriş hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+</body>
+</html>
