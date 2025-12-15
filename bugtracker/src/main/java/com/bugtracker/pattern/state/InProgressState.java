@@ -21,7 +21,7 @@ public class InProgressState extends BugState {
     @Override
     public void resolve() {
         System.out.println("Bug çözüldü olarak işaretleniyor...");
-        bug.setStatus(BugStatus.Resolved);
+        bug.setStatus(BugStatus.RESOLVED);
         bug.setResolvedAt(LocalDateTime.now());
         changeState(new ResolvedState(bug));
     }

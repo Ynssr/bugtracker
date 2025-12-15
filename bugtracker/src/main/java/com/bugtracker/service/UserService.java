@@ -22,7 +22,7 @@ public class UserService {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new IllegalArgumentException("İşlemi yapan kullanıcı bulunamadı!"));
 
-        if (requester.getRole() != UserRole.Admin) {
+        if (requester.getRole() != UserRole.ADMIN) {
             throw new IllegalArgumentException("Bu işlemi yapmaya yetkiniz yok! Sadece YÖNETİCİ yeni kullanıcı ekleyebilir.");
         }
         if (userRepository.existsByUsername(user.getUsername())) {

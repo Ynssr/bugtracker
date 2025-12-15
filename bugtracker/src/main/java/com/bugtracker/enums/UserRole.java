@@ -1,10 +1,10 @@
 package com.bugtracker.enums;
 
 public enum UserRole {
-    Admin("Yönetici"),
-    Developer("Geliştirici"),
-    Tester("Test Uzmanı"),
-    Reporter("Raporlayıcı");
+    ADMIN("Yönetici"),
+    DEVELOPER("Geliştirici"),
+    TESTER("Test Uzmanı / Raporlayıcı");
+    
     private final String displayName;
 
     UserRole(String displayName) {

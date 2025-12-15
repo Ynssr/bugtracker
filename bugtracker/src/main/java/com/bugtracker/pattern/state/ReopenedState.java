@@ -16,14 +16,14 @@ public class ReopenedState extends BugState {
     public void assign(User developer) {
         System.out.println("Yeniden açılan bug " + developer.getUsername() + " kullanıcısına atanıyor...");
         bug.setAssignee(developer);
-        bug.setStatus(BugStatus.In_progress);
+        bug.setStatus(BugStatus.IN_PROGRESS);
         changeState(new InProgressState(bug));
     }
 
     @Override
     public void resolve() {
         System.out.println("Bug tekrar çözüldü olarak işaretleniyor...");
-        bug.setStatus(BugStatus.Resolved);
+        bug.setStatus(BugStatus.RESOLVED);
         bug.setResolvedAt(LocalDateTime.now());
         changeState(new ResolvedState(bug));
     }

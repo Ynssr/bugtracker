@@ -1,10 +1,10 @@
 package com.bugtracker.enums;
 
 public enum BugSeverity {
-    Minor("Küçük"),
-    Major("Büyük"),
-    Critical("Kritik"),
-    Blocker("Çok Kritik");
+    MINOR("Küçük"),
+    MAJOR("Büyük"),
+    CRITICAL("Kritik"),
+    BLOCKER("Çok Kritik");
 
     private final String displayName;
     BugSeverity(String displayName) {
@@ -14,4 +14,3 @@ public enum BugSeverity {
         return displayName;
     }
 }
-

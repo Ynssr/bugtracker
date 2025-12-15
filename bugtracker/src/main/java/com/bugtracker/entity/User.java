@@ -54,14 +54,12 @@ public abstract class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Abstract methods - Polymorphism için
     public abstract boolean canDeleteBug();
 
     public abstract boolean canAssignBug();
 
     public abstract boolean canCloseBug();
 
-    // Lifecycle callback
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

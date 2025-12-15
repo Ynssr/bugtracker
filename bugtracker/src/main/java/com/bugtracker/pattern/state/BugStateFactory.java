@@ -9,11 +9,11 @@ public class BugStateFactory {
         BugStatus status = bug.getStatus();
 
         return switch (status) {
-            case Open -> new OpenState(bug);
-            case In_progress -> new InProgressState(bug);
-            case Resolved -> new ResolvedState(bug);
-            case Reopened -> new ReopenedState(bug);
-            case Closed -> new ClosedState(bug);
+            case OPEN -> new OpenState(bug);
+            case IN_PROGRESS -> new InProgressState(bug);
+            case RESOLVED -> new ResolvedState(bug);
+            case REOPENED -> new ReopenedState(bug);
+            case CLOSED -> new ClosedState(bug);
         };
     }
 }

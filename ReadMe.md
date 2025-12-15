@@ -8,7 +8,6 @@ Nesne Yönelimli Programlama dersi için geliştirilmiş web tabanlı hata takip
 - Kullanıcı rolleri (Yönetici, Geliştirici, Test Uzmanı, Raporlayıcı)
 - Hata durumu takibi (Açık, Devam Ediyor, Çözüldü, Kapatıldı)
 - Hata önceliklendirme sistemi
-- Bildirim sistemi
 
 ## KUllanılan Teknolojiler
 
@@ -26,13 +25,6 @@ Projede kullanılan nesne yönelimli programlama konseptleri:
 - **Inheritance** (Kalıtım)
 - **Polymorphism** (Çok biçimlilik)
 - **Abstraction** (Soyutlama)
-
-## Design Pattern'ler
-
-- Strategy Pattern (Bildirim sistemi)
-- Observer Pattern (Olay takibi)
-- State Pattern (Hata durumu yönetimi)
-- Factory Pattern (Rapor üretimi)
 
 ## 📦 Kurulum
 ```bash

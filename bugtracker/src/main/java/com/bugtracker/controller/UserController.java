@@ -19,25 +19,26 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user, @RequestParam Long requesterId) {
+    public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
         try {
-            User newUser = userService.createUser(user, requesterId);
+            User user = createUserByRole(request);
+            User newUser = userService.createUser(user, 1L); // Admin ID = 1
             return ResponseEntity.ok(newUser);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Beklenmeyen bir hata oluştu.");
+            return ResponseEntity.internalServerError().body("Beklenmeyen bir hata oluştu: " + e.getMessage());
         }
     }
 
     private User createUserByRole(CreateUserRequest request) {
         User user = switch (request.getRole()) {
-            case Admin -> {
+            case ADMIN -> {
                 Admin admin = new Admin(request.getUsername(), request.getEmail(), request.getPassword());
                 admin.setFullName(request.getFullName());
                 yield admin;
             }
-            case Developer -> {
+            case DEVELOPER -> {
                 Developer dev = new Developer(request.getUsername(), request.getEmail(), request.getPassword());
                 dev.setFullName(request.getFullName());
                 if (request.getSpecialization() != null) {
@@ -48,7 +49,7 @@ public class UserController {
                 }
                 yield dev;
             }
-            case Tester -> {
+            case TESTER -> {
                 Tester tester = new Tester(request.getUsername(), request.getEmail(), request.getPassword());
                 tester.setFullName(request.getFullName());
                 if (request.getTestingType() != null) {
@@ -56,16 +57,9 @@ public class UserController {
                 }
                 yield tester;
             }
-            case Reporter -> {
-                Reporter reporter = new Reporter(request.getUsername(), request.getEmail(), request.getPassword());
-                reporter.setFullName(request.getFullName());
-                yield reporter;
-            }
         };
         return user;
     }
-
-    // ==================== READ ====================
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {

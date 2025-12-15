@@ -25,11 +25,11 @@ public class Project {
     private String description;
 
     @Column(name = "project_key", unique = true, length = 10)
-    private String projectKey; // Örn: "PROJ", "BUG"
+    private String projectKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    private User owner; // Proje sahibi
+    private User owner;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,7 +40,6 @@ public class Project {
     @Column(name = "is_active")
     private boolean isActive = true;
 
-    // İlişki - One-to-Many
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bug> bugs = new ArrayList<>();
 
@@ -54,7 +53,6 @@ public class Project {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Helper methods
     public void addBug(Bug bug) {
         bugs.add(bug);
         bug.setProject(this);

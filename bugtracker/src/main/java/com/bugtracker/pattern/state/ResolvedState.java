@@ -25,7 +25,7 @@ public class ResolvedState extends BugState {
     @Override
     public void close() {
         System.out.println("Bug kapatılıyor...");
-        bug.setStatus(BugStatus.Closed);
+        bug.setStatus(BugStatus.CLOSED);
         bug.setClosedAt(LocalDateTime.now());
         changeState(new ClosedState(bug));
     }
@@ -33,7 +33,7 @@ public class ResolvedState extends BugState {
     @Override
     public void reopen() {
         System.out.println("Bug yeniden açılıyor...");
-        bug.setStatus(BugStatus.Reopened);
+        bug.setStatus(BugStatus.REOPENED);
         bug.setResolvedAt(null);
         changeState(new ReopenedState(bug));
     }

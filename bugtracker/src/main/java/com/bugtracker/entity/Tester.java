@@ -19,21 +19,21 @@ public class Tester extends User {
     private String testingType; // Manual, Automation, Performance
 
     public Tester(String username, String email, String password) {
-        super(username, email, password, UserRole.Tester);
+        super(username, email, password, UserRole.TESTER);
     }
 
     @Override
     public boolean canDeleteBug() {
-        return false; // Tester bug silemez
+        return false;
     }
 
     @Override
     public boolean canAssignBug() {
-        return false; // Tester bug atayamaz
+        return false;
     }
 
     @Override
     public boolean canCloseBug() {
-        return false; // Tester bug kapatamaz, sadece raporlar
+        return false;
     }
 }

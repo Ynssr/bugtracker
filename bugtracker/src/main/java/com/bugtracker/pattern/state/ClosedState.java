@@ -28,7 +28,7 @@ public class ClosedState extends BugState {
     @Override
     public void reopen() {
         System.out.println("Kapalı bug yeniden açılıyor...");
-        bug.setStatus(BugStatus.Reopened);
+        bug.setStatus(BugStatus.REOPENED);
         bug.setClosedAt(null);
         changeState(new ReopenedState(bug));
     }

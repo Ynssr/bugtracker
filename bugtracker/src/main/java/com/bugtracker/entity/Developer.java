@@ -22,21 +22,21 @@ public class Developer extends User {
     private Integer experienceYears;
 
     public Developer(String username, String email, String password) {
-        super(username, email, password, UserRole.Developer);
+        super(username, email, password, UserRole.DEVELOPER);
     }
 
     @Override
     public boolean canDeleteBug() {
-        return false; // Developer kendi atanan bug'ları bile silemez
+        return false;
     }
 
     @Override
     public boolean canAssignBug() {
-        return false; // Developer bug atayamaz
+        return false;
     }
 
     @Override
     public boolean canCloseBug() {
-        return true; // Developer kendine atanan bug'ı kapatabilir
+        return true;
     }
 }

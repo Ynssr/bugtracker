@@ -1,11 +1,11 @@
 package com.bugtracker.enums;
 
 public enum BugStatus {
-    Open("Açık"),
-    In_progress("Devam Ediyor"),
-    Resolved("Çözüldü"),
-    Reopened("Yeniden Açıldı"),
-    Closed("Kapatıldı");
+    OPEN("Açık"),
+    IN_PROGRESS("Devam Ediyor"),
+    RESOLVED("Çözüldü"),
+    REOPENED("Yeniden Açıldı"),
+    CLOSED("Kapatıldı");
 
     private final String displayName;
 

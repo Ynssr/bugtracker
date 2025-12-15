@@ -14,7 +14,7 @@ public class OpenState extends BugState {
     public void assign(User developer) {
         System.out.println("Bug " + developer.getUsername() + " kullanıcısına atanıyor...");
         bug.setAssignee(developer);
-        bug.setStatus(BugStatus.In_progress);
+        bug.setStatus(BugStatus.IN_PROGRESS);
         changeState(new InProgressState(bug));
     }
 

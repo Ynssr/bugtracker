@@ -102,6 +102,26 @@ public class BugController {
         return ResponseEntity.ok(assignedBug);
     }
 
+    @PutMapping("/{id}/assign-tester")
+    public ResponseEntity<Bug> assignTester(
+            @PathVariable Long id,
+            @RequestParam Long testerId,
+            @RequestParam Long assignerId) {
+
+        User tester = userService.getUserById(testerId)
+                .orElseThrow(() -> new IllegalArgumentException("Tester bulunamadı!"));
+
+        User assigner = userService.getUserById(assignerId)
+                .orElseThrow(() -> new IllegalArgumentException("Atayan kullanıcı bulunamadı!"));
+
+        Bug bug = bugService.getBugById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Bug bulunamadı!"));
+
+        bug.assignTester(tester);
+        Bug savedBug = bugService.updateBug(id, bug, assigner);
+        return ResponseEntity.ok(savedBug);
+    }
+
     @PutMapping("/{id}/resolve")
     public ResponseEntity<Bug> resolveBug(@PathVariable Long id, @RequestParam Long resolverId) {
         User resolver = userService.getUserById(resolverId)

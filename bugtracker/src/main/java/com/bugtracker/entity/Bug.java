@@ -3,11 +3,13 @@ package com.bugtracker.entity;
 import com.bugtracker.enums.BugPriority;
 import com.bugtracker.enums.BugSeverity;
 import com.bugtracker.enums.BugStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "bugs")
@@ -27,7 +29,7 @@ public class Bug {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BugStatus status = BugStatus.Open;
+    private BugStatus status = BugStatus.OPEN;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,18 +39,25 @@ public class Bug {
     @Column(nullable = false)
     private BugSeverity severity;
 
-    // İlişkiler - Many-to-One
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reporter_id", nullable = false)
-    private User reporter; // Bug'ı raporlayan kişi
+    @JsonIgnoreProperties({"reportedBugs", "assignedBugs", "password", "hibernateLazyInitializer"})
+    private User reporter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assignee_id")
-    private User assignee; // Bug'a atanan kişi (Developer)
+    @JsonIgnoreProperties({"reportedBugs", "assignedBugs", "password", "hibernateLazyInitializer"})
+    private User assignee; //Developer
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tester_id")
+    @JsonIgnoreProperties({"reportedBugs", "assignedBugs", "password", "hibernateLazyInitializer"})
+    private User tester; //TEster
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
-    private Project project; // Hangi projeye ait
+    @JsonIgnoreProperties({"bugs", "owner", "hibernateLazyInitializer"})
+    private Project project;
 
     // Tarihler
     @Column(name = "created_at", nullable = false)
@@ -74,9 +83,12 @@ public class Bug {
     private String actualBehavior;
 
     @Column(name = "environment")
-    private String environment; // Production, Staging, Development
+    private String environment;
 
-    // Constructor
+    @OneToMany(mappedBy = "bug", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("bug")
+    private List<BugActivity> activities = new ArrayList<>();
+
     public Bug(String title, String description, BugPriority priority,
                BugSeverity severity, User reporter) {
         this.title = title;
@@ -84,46 +96,50 @@ public class Bug {
         this.priority = priority;
         this.severity = severity;
         this.reporter = reporter;
-        this.status = BugStatus.Open;
+        this.status = BugStatus.OPEN;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Business Logic Methods
     public void assignTo(User developer) {
         if (developer.getRole().name().equals("DEVELOPER")) {
             this.assignee = developer;
-            this.status = BugStatus.In_progress;
+            this.status = BugStatus.IN_PROGRESS;
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    public void assignTester(User tester) {
+        if (tester.getRole().name().equals("TESTER") || tester.getRole().name().equals("REPORTER")) {
+            this.tester = tester;
             this.updatedAt = LocalDateTime.now();
         }
     }
 
     public void resolve() {
-        this.status = BugStatus.Resolved;
+        this.status = BugStatus.RESOLVED;
         this.resolvedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     public void reopen() {
-        this.status = BugStatus.Reopened;
+        this.status = BugStatus.REOPENED;
         this.resolvedAt = null;
         this.closedAt = null;
         this.updatedAt = LocalDateTime.now();
     }
 
     public void close() {
-        this.status = BugStatus.Closed;
+        this.status = BugStatus.CLOSED;
         this.closedAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
-    // Lifecycle callbacks
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (status == null) {
-            status = BugStatus.Open;
+            status = BugStatus.OPEN;
         }
     }
 

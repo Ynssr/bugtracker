@@ -4,7 +4,6 @@ import com.bugtracker.entity.Bug;
 import com.bugtracker.entity.User;
 import com.bugtracker.enums.BugPriority;
 import com.bugtracker.enums.BugStatus;
-import com.bugtracker.pattern.observer.BugObserver;
 import com.bugtracker.repository.BugRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +18,8 @@ import java.util.Optional;
 public class BugService {
 
     private final BugRepository bugRepository;
-    private final List<BugObserver> observers; // Tüm observer'lar otomatik inject edilir
 
     public Bug createBug(Bug bug, User creator) {
-        //Doğrukama
         if (bug.getTitle() == null || bug.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Bug başlığı boş olamaz!");
         }
@@ -36,14 +33,8 @@ public class BugService {
         }
 
         Bug savedBug = bugRepository.save(bug);
-
-        // Observer'ları bilgilendir
-        notifyObservers(observer -> observer.onBugCreated(savedBug, creator));
-
         return savedBug;
     }
-
-    // Okua
 
     public Optional<Bug> getBugById(Long id) {
         return bugRepository.findById(id);
@@ -80,8 +71,6 @@ public class BugService {
     public List<Bug> getHighPriorityOpenBugs() {
         return bugRepository.findHighPriorityOpenBugs();
     }
-
-    // Güncelleme
 
     public Bug updateBug(Long id, Bug updatedBug, User updater) {
         Bug existingBug = bugRepository.findById(id)
@@ -120,15 +109,13 @@ public class BugService {
 
         Bug savedBug = bugRepository.save(existingBug);
 
-        // Observer'ları bilgilendir
         if (changes.length() > 0) {
             String changeDescription = changes.toString();
-            notifyObservers(observer -> observer.onBugUpdated(savedBug, updater, changeDescription));
         }
 
         return savedBug;
     }
-    // Bug developera atama
+    
     public Bug assignBug(Long bugId, User developer, User assigner) {
         Bug bug = bugRepository.findById(bugId)
                 .orElseThrow(() -> new IllegalArgumentException("Bug bulunamadı!"));
@@ -139,60 +126,58 @@ public class BugService {
 
         bug.assignTo(developer);
         Bug savedBug = bugRepository.save(bug);
-
-        // Observer'ları bilgilendir
-        notifyObservers(observer -> observer.onBugAssigned(savedBug, developer, assigner));
-
         return savedBug;
     }
 
-    // Bug sorununu çözme
     public Bug resolveBug(Long bugId, User resolver) {
         Bug bug = bugRepository.findById(bugId)
                 .orElseThrow(() -> new IllegalArgumentException("Bug bulunamadı!"));
 
+        if (bug.getAssignee() == null) {
+            throw new IllegalArgumentException("Bu bug henüz atanmamış!");
+        }
+        
+        if (!bug.getAssignee().getId().equals(resolver.getId())) {
+            throw new IllegalArgumentException("Bu bug'ı sadece atanan developer çözebilir!");
+        }
+
         bug.resolve();
         Bug savedBug = bugRepository.save(bug);
-
-        // Observer'ları bilgilendir
-        notifyObservers(observer -> observer.onBugResolved(savedBug, resolver));
-
         return savedBug;
     }
 
-    // Bugı yeniden açma
     public Bug reopenBug(Long bugId, User reopener) {
         Bug bug = bugRepository.findById(bugId)
                 .orElseThrow(() -> new IllegalArgumentException("Bug bulunamadı!"));
 
+        boolean isAdmin = reopener.getRole().name().equals("ADMIN");
+        boolean isTester = reopener.getRole().name().equals("TESTER");
+        
+        if (!isAdmin && !isTester) {
+            throw new IllegalArgumentException("Bu bug'ı yeniden açma yetkiniz yok! Sadece Tester veya Admin açabilir.");
+        }
+
         bug.reopen();
         Bug savedBug = bugRepository.save(bug);
-
-        // Observer'ları bilgilendir
-        notifyObservers(observer -> observer.onBugReopened(savedBug, reopener));
-
         return savedBug;
     }
 
-    // Bug Kaptma
     public Bug closeBug(Long bugId, User closer) {
         Bug bug = bugRepository.findById(bugId)
                 .orElseThrow(() -> new IllegalArgumentException("Bug bulunamadı!"));
 
-        if (!closer.canCloseBug() && !bug.getAssignee().equals(closer)) {
-            throw new IllegalArgumentException("Bu bug'ı kapatma yetkiniz yok!");
+        boolean isAdmin = closer.getRole().name().equals("ADMIN");
+        boolean isTester = closer.getRole().name().equals("TESTER");
+        
+        if (!isAdmin && !isTester) {
+            throw new IllegalArgumentException("Bu bug'ı kapatma yetkiniz yok! Sadece Tester veya Admin kapatabilir.");
         }
 
         bug.close();
         Bug savedBug = bugRepository.save(bug);
 
-        // Observer'ları bilgilendir
-        notifyObservers(observer -> observer.onBugClosed(savedBug, closer));
-
         return savedBug;
     }
-
-    // Silme
 
     public void deleteBug(Long bugId, User user) {
         Bug bug = bugRepository.findById(bugId)
@@ -205,13 +190,9 @@ public class BugService {
         bugRepository.deleteById(bugId);
     }
 
-    // Arama
-
     public List<Bug> searchBugsByTitle(String keyword) {
         return bugRepository.findByTitleContainingIgnoreCase(keyword);
     }
-
-    // İstatilslik
 
     public long countBugsByStatus(BugStatus status) {
         return bugRepository.countByStatus(status);
@@ -221,8 +202,4 @@ public class BugService {
         return bugRepository.countByAssignee(assignee);
     }
 
-    // Tüm observer'ları bilgilendir
-    private void notifyObservers(java.util.function.Consumer<BugObserver> action) {
-        observers.forEach(action);
-    }
 }

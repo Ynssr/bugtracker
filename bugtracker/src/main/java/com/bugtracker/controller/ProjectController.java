@@ -21,26 +21,34 @@ public class ProjectController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam Long ownerId) {
+        User owner = userService.getUserById(ownerId)
+                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı!"));
+        
+        project.setOwner(owner);
         Project createdProject = projectService.createProject(project);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
     }
+    
     @GetMapping
     public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
+    
     @GetMapping("/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return projectService.getProjectById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    
     @GetMapping("/key/{key}")
     public ResponseEntity<Project> getProjectByKey(@PathVariable String key) {
         return projectService.getProjectByKey(key)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    
     @GetMapping("/active")
     public ResponseEntity<List<Project>> getActiveProjects() {
         return ResponseEntity.ok(projectService.getActiveProjects());
@@ -50,16 +58,19 @@ public class ProjectController {
     public ResponseEntity<List<Project>> searchProjects(@RequestParam String keyword) {
         return ResponseEntity.ok(projectService.searchProjectsByName(keyword));
     }
+    
     @PutMapping("/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project) {
         Project updatedProject = projectService.updateProject(id, project);
         return ResponseEntity.ok(updatedProject);
     }
+    
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<Void> deactivateProject(@PathVariable Long id) {
         projectService.deactivateProject(id);
         return ResponseEntity.ok().build();
     }
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id, @RequestParam Long userId) {
         User user = userService.getUserById(userId)

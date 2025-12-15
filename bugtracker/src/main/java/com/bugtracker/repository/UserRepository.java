@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // Custom query methods - Spring otomatik implement eder
-
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);

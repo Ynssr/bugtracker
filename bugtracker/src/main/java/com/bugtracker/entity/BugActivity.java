@@ -22,19 +22,18 @@ public class BugActivity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user; // Kim yaptı?
+    private User user;
 
     @Column(nullable = false, length = 50)
-    private String activityType; // CREATED, UPDATED, ASSIGNED, RESOLVED, etc.
+    private String activityType;
 
     @Column(columnDefinition = "Text")
-    private String description; // Ne oldu?
-
+    private String description;
     @Column(name = "old_value")
-    private String oldValue; // Eski değer
+    private String oldValue;
 
     @Column(name = "new_value")
-    private String newValue; // Yeni değer
+    private String newValue;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
